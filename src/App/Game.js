@@ -14,31 +14,45 @@ function Square(props) {
 class Game extends Component {
   constructor(props) {
     super(props);
+    this.rightPositions = [
+      [ 1,  2,  3,    4],
+      [ 5,  6,  7,    8],
+      // [ 9, 10, 11,   12],
+      // [13, 14, 15, null],
+      [ 9, 10, 15,   11],
+      [13, 14, null, 12],
+    ];
     this.state = {
       started: false,
-      positions: [
-        [ 1,  2,  3,    4],
-        [ 5,  6,  7,    8],
-        [ 9, 10, 11,   12],
-        [13, 14, 15, null],
-      ],
+      positions: this.rightPositions,
       moves: 0,
+      wins: [],
     }
-    // [15,  2,  6, 13],
-    //     [5,  3,  7,  8],
-    //     [9, 10, 14, 12],
-    //     [4, 11, 1, null],
     this.time = new Date();
   }
-  
+  startGame(squares) { 
+    let squaresValues = [];
+    squares.forEach((elem) => {
+      squaresValues = squaresValues.concat(elem);
+    });
+    squaresValues.sort((a,b) => (Math.random() - 0.5));
+    squares.forEach((elem, i) => {
+      squares[i].splice(0,elem.length);
+      squares[i] = elem.concat(squaresValues.slice(i*4, (i+1)*4));
+
+    });
+    this.setState({ 
+      started: true, 
+      positions: squares, 
+    }); 
+  }
   handleClick(elem, x, y) {
     // console.log(`--- clicked btn ${elem} pos (${x}, ${y})`);
     let squares = [];
     for(let i = 0; i < 4; i++) squares[i] = this.state.positions[i].slice();
-    //if (calculateWinner(squares)) return;
-    console.log(squares);
     // if(!this.state.started) this.startGame(squares);
-    console.log(squares);
+    if(calculateWinner(squares)) return;
+
     // where null
     const xNull = squares[y].indexOf(null);
     const yNull = (() => {
@@ -55,13 +69,21 @@ class Game extends Component {
       else {for(let i = yNull; i < y; i++) squares[i][x] = squares[i+1][x]}
       squares[y][x] = null;
     }    
-    // console.log(`row = ${yNull}, column = ${xNull}`);
-    // console.log('---', calculateWinner(squares));
     if(~xNull || ~yNull) {
-      this.setState({
-        positions: squares,
-        moves: this.state.moves + 1,
-      });
+      if(calculateWinner(squares)) {
+        alert('won');
+        this.setState({
+          positions: this.rightPositions,
+          moves: 0,
+          started: false,
+        });
+      }
+      else {
+        this.setState({
+          positions: squares,
+          moves: this.state.moves + 1,
+        });
+      }
     }
 
   }
@@ -80,8 +102,8 @@ class Game extends Component {
         })
       }
     );
-    console.log('---', calculateWinner(squares));
-    console.log(squares);
+    // console.log('---', calculateWinner(squares));
+    // console.log(squares);
 
     // console.log('---', 'squares');
     return (
@@ -96,11 +118,19 @@ class Game extends Component {
 }
 function calculateWinner(squares) {
   let win = true;
-  squares.forEach((row, i) => {
-    let kek = row.every((elem, j) => {
+  let tempSquares = squares.slice();
+  tempSquares.forEach((elem,i) => {
+    tempSquares[i] = elem.slice();
+  });
+  if(tempSquares[3][1] === 15 && tempSquares[3][2] === 14) {
+    tempSquares[3][1] = 14;
+    tempSquares[3][2] = 15;
+  } 
+  tempSquares.forEach((row, i) => {
+    let rowIsRight = row.every((elem, j) => {
       return elem === ((i*4+j+1 === 16)?null:i*4+j+1);
     })
-    if(!kek) win = false;
+    if(!rowIsRight) win = false;
   });
   return win;
 }
