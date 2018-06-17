@@ -50,10 +50,7 @@ class Game extends Component {
       moves: 0,
       seconds: 0,
       minutes: 0,
-      positions: [[ 1,  2,  3,    4],
-      [ 5,  6,  7,    8],
-      [ 9, 14, 10,   11],
-      [13, 15, null, 12],], 
+      positions: tempSquares, 
     }); 
   }
   handleClick = (x, y) =>  {
