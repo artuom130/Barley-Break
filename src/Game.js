@@ -1,15 +1,8 @@
 import React, {Component} from 'react';
-import GameInfo from './GameInfo';
+import Squares from './Components/Squares'
+import GameInfo from './Components/GameInfo';
 
-function Square(props) {
-  const position = {
-    left: (props.x*101+2),
-    top: (props.y*101+2),
-  }
-  return (
-    <button onClick={() => props.onClick(props.value, props.x, props.y)} className="square" style={position}>{props.value}</button>    
-  );
-}
+
 
 class Game extends Component {
   constructor(props) {
@@ -17,36 +10,53 @@ class Game extends Component {
     this.rightPositions = [
       [ 1,  2,  3,    4],
       [ 5,  6,  7,    8],
-      // [ 9, 10, 11,   12],
-      // [13, 14, 15, null],
-      [ 9, 10, 15,   11],
-      [13, 14, null, 12],
+      [ 9, 10, 11,   12],
+      [13, 14, 15, null],
+      // [ 9, 10, 15,   11],
+      // [13, 14, null, 12],
     ];
     this.state = {
       started: false,
+      timeStarted: {},
       positions: this.rightPositions,
       moves: 0,
-      wins: [],
+      time: {
+        seconds: 0,
+        minutes: 0,
+      },
     }
-    this.time = new Date();
   }
   startGame(squares) { 
     let squaresValues = [];
-    squares.forEach((elem) => {
+    let tempSquares = squares.slice();
+    tempSquares.forEach((elem,i) => {
+      tempSquares[i] = elem.slice();
+    });
+    tempSquares.forEach((elem) => {
       squaresValues = squaresValues.concat(elem);
     });
     squaresValues.sort((a,b) => (Math.random() - 0.5));
-    squares.forEach((elem, i) => {
-      squares[i].splice(0,elem.length);
-      squares[i] = elem.concat(squaresValues.slice(i*4, (i+1)*4));
-
+    tempSquares.forEach((elem, i) => {
+      tempSquares[i].splice(0,elem.length);
+      tempSquares[i] = elem.concat(squaresValues.slice(i*4, (i+1)*4));
     });
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
     this.setState({ 
       started: true, 
-      positions: squares, 
+      timeStarted: new Date(),
+      moves: 0,
+      seconds: 0,
+      minutes: 0,
+      positions: [[ 1,  2,  3,    4],
+      [ 5,  6,  7,    8],
+      [ 9, 14, 10,   11],
+      [13, 15, null, 12],], 
     }); 
   }
-  handleClick(elem, x, y) {
+  handleClick = (x, y) =>  {
     // console.log(`--- clicked btn ${elem} pos (${x}, ${y})`);
     let squares = [];
     for(let i = 0; i < 4; i++) squares[i] = this.state.positions[i].slice();
@@ -71,10 +81,9 @@ class Game extends Component {
     }    
     if(~xNull || ~yNull) {
       if(calculateWinner(squares)) {
-        alert('won');
+        clearInterval(this.timerID);
         this.setState({
           positions: this.rightPositions,
-          moves: 0,
           started: false,
         });
       }
@@ -85,32 +94,26 @@ class Game extends Component {
         });
       }
     }
-
+  }
+  tick() {
+    const diff = new Date() - this.state.timeStarted;
+    const seconds = Math.round((diff / 1000) % 60);
+    const minutes = Math.round((diff / 60000) % 60);
+    console.log('tick',  minutes,seconds);
+    this.setState({
+      seconds: seconds,
+      minutes: minutes,
+    });
   }
   render() {
-    const rows = this.state.positions.slice();
-    const squares = rows.map(
-      (elem, y) => {
-        return elem.map((elem, x) => {
-          return <Square 
-            key={elem}
-            value={elem} 
-            x={x}
-            y={y}
-            onClick={() => this.handleClick(elem, x, y)}
-          />
-        })
-      }
-    );
-    // console.log('---', calculateWinner(squares));
-    // console.log(squares);
-
-    // console.log('---', 'squares');
+    
+    
     return (
       <div>
-        <GameInfo moves={this.state.moves} time={this.time}/>
+        <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]}/>
         <div className="board">
-          {squares}
+          <Squares positions={this.state.positions} handleClick={this.handleClick}/>
+          {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>}
         </div>
       </div>
     );
