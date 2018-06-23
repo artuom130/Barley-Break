@@ -1,8 +1,8 @@
 import React from 'react';
 function Square(props) {
   const position = {
-    left: (props.x*101+2),
-    top: (props.y*101+2),
+    left: (props.x*81+2),
+    top: (props.y*81+2),
   }
   return (
     <button onClick={props.onClick} className="square" style={position}>{props.value}</button>    

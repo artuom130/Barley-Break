@@ -57,7 +57,7 @@ class Game extends Component {
     // console.log(`--- clicked btn ${elem} pos (${x}, ${y})`);
     let squares = [];
     for(let i = 0; i < 4; i++) squares[i] = this.state.positions[i].slice();
-    // if(!this.state.started) this.startGame(squares);
+    if(!this.state.started) this.startGame(this.rightPositions);
     if(calculateWinner(squares)) return;
 
     // where null
@@ -94,8 +94,8 @@ class Game extends Component {
   }
   tick() {
     const diff = new Date() - this.state.timeStarted;
-    const seconds = Math.round((diff / 1000) % 60);
-    const minutes = Math.round((diff / 60000) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    const minutes = Math.floor((diff / 60000) % 60);
     console.log('tick',  minutes,seconds);
     this.setState({
       seconds: seconds,
@@ -110,7 +110,7 @@ class Game extends Component {
         <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]}/>
         <div className="board">
           <Squares positions={this.state.positions} handleClick={this.handleClick}/>
-          {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>}
+          {/* {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>} */}
         </div>
       </div>
     );
