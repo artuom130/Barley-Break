@@ -1,31 +1,43 @@
 import React, {Component} from 'react';
 import Squares from './Components/Squares'
 import GameInfo from './Components/GameInfo';
-
+import Complexity from './Components/Complexity'
 
 
 class Game extends Component {
   constructor(props) {
     super(props);
-    this.rightPositions = [
-      [ 1,  2,  3,    4],
-      [ 5,  6,  7,    8],
-      [ 9, 10, 11,   12],
-      [13, 14, 15, null],
-      // [ 9, 10, 15,   11],
-      // [13, 14, null, 12],
-    ];
+    // this.rightPositions = [
+    //   [ 1,  2,  3,    4],
+    //   [ 5,  6,  7,    8],
+    //   [ 9, 10, 11,   12],
+    //   [13, 14, 15, null],
+    //   // [ 9, 10, 15,   11],
+    //   // [13, 14, null, 12],
+    // ];
     this.state = {
       started: false,
       timeStarted: {},
-      positions: this.rightPositions,
+      size: 4,
+      sizeStyle: {
+        width: 323,
+        height: 323,
+      }, 
+      positions: rightPositions(4),
       moves: 0,
       time: {
         seconds: 0,
         minutes: 0,
       },
-    }
+    };
   }
+  // componentWillMount() {
+  //   this.setState({
+  //     started: false,
+  //     positions: rightPositions(this.state.size),
+      
+  //   });
+  // }
   startGame(squares) { 
     let squaresValues = [];
     let tempSquares = squares.slice();
@@ -38,7 +50,7 @@ class Game extends Component {
     squaresValues.sort((a,b) => (Math.random() - 0.5));
     tempSquares.forEach((elem, i) => {
       tempSquares[i].splice(0,elem.length);
-      tempSquares[i] = elem.concat(squaresValues.slice(i*4, (i+1)*4));
+      tempSquares[i] = elem.concat(squaresValues.slice(i*this.state.size, (i+1)*this.state.size));
     });
     this.timerID = setInterval(
       () => this.tick(),
@@ -53,17 +65,43 @@ class Game extends Component {
       positions: tempSquares, 
     }); 
   }
+
+  wonGame() {
+    clearInterval(this.timerID);
+    this.setState({
+      positions: rightPositions(this.state.size),
+      started: false,
+    });
+  }
+  handleChanges = (e) => {
+    this.wonGame();
+    this.setState({
+      size: e.target.value,
+      sizeStyle: {
+        width: e.target.value*80+3,
+        height: e.target.value*80+3,
+      },
+    });
+  }
+  
   handleClick = (x, y) =>  {
     // console.log(`--- clicked btn ${elem} pos (${x}, ${y})`);
-    let squares = [];
-    for(let i = 0; i < 4; i++) squares[i] = this.state.positions[i].slice();
-    if(!this.state.started) this.startGame(this.rightPositions);
-    if(calculateWinner(squares)) return;
-
+    let squares = this.state.positions.slice();
+    squares.forEach((elem,i) => {
+      squares[i] = elem.slice();
+    });
+    //start game
+    if(!this.state.started) this.startGame(rightPositions(this.state.size));
+    //end game
+    if(this.state.started && calculateWinner(squares, this.state.size)) return;
+    if(!squares[0][this.state.size-1]) {
+      console.error('squres don`t change');
+      return;
+    }
     // where null
     const xNull = squares[y].indexOf(null);
     const yNull = (() => {
-      for(let i = 0; i < 4; i++) if(squares[i][x] == null) return i;
+      for(let i = 0; i < this.state.size; i++) if(squares[i][x] == null) return i;
       return -1;
     })();
     if (~xNull) {
@@ -77,12 +115,8 @@ class Game extends Component {
       squares[y][x] = null;
     }    
     if(~xNull || ~yNull) {
-      if(calculateWinner(squares)) {
-        clearInterval(this.timerID);
-        this.setState({
-          positions: this.rightPositions,
-          started: false,
-        });
+      if(calculateWinner(squares, this.state.size)) {
+        this.wonGame();
       }
       else {
         this.setState({
@@ -92,46 +126,64 @@ class Game extends Component {
       }
     }
   }
+  
   tick() {
     const diff = new Date() - this.state.timeStarted;
     const seconds = Math.floor((diff / 1000) % 60);
     const minutes = Math.floor((diff / 60000) % 60);
-    console.log('tick',  minutes,seconds);
+    // console.log('tick',  minutes,seconds);
     this.setState({
       seconds: seconds,
       minutes: minutes,
     });
   }
   render() {
-    
-    
     return (
-      <div>
+      <div className="layout-positioner">
+        <Complexity handleChanges={this.handleChanges}/>
         <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]}/>
-        <div className="board">
-          <Squares positions={this.state.positions} handleClick={this.handleClick}/>
+        <div className="board" style={this.state.sizeStyle}>
+          <Squares positions={!this.state.started ? rightPositions(this.state.size) : this.state.positions} handleClick={this.handleClick}/>
           {/* {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>} */}
         </div>
       </div>
     );
   }
 }
-function calculateWinner(squares) {
+function calculateWinner(squares, size) {
   let win = true;
+  let boardSize = size*size;
   let tempSquares = squares.slice();
   tempSquares.forEach((elem,i) => {
     tempSquares[i] = elem.slice();
   });
-  if(tempSquares[3][1] === 15 && tempSquares[3][2] === 14) {
-    tempSquares[3][1] = 14;
-    tempSquares[3][2] = 15;
+  if(tempSquares[size-1][size-2] === boardSize-2 && tempSquares[size-1][size-3] === boardSize-1) {
+    tempSquares[size-1][size-2] = boardSize-1;
+    tempSquares[size-1][size-3] = boardSize-2;
   } 
   tempSquares.forEach((row, i) => {
     let rowIsRight = row.every((elem, j) => {
-      return elem === ((i*4+j+1 === 16)?null:i*4+j+1);
+      return elem === ((i*size+j+1 === boardSize)?null:i*size+j+1);
     })
     if(!rowIsRight) win = false;
   });
   return win;
+}
+function rightPositions(size) {
+  let positions = [];
+  let i, j;
+  for(i = 0; i < size; i++) {
+    positions[i] = [];
+    for(j = 0; j < size; j++) 
+      positions[i].push(i*size + j + 1);
+  }
+  positions[size-1][size-1] = null;
+  // positions.forEach((row, i) => {
+  //   row.forEach((elem, j) => {
+  //     elem = i*size + j;
+  //     console.log(elem);
+  //   })
+  // })
+  return positions;
 }
 export default Game; 
