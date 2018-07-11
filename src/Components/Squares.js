@@ -1,11 +1,22 @@
 import React from 'react';
 function Square(props) {
-  const position = {
-    left: (props.x*81+2),
-    top: (props.y*81+2),
+  const left = window.innerWidth < 480 ? (props.x*(240 / props.size + 1)+2) : (props.x*81+2);
+  const top = window.innerWidth < 480 ? (props.y*(240 / props.size + 1)+2) : (props.y*81+2);
+  const width = window.innerWidth < 480 ? (240 / props.size) : 80;
+  const height = window.innerWidth < 480 ? (240 / props.size) : 80;
+  const fsize = window.innerWidth < 480 ? (120 / props.size + 10) : 50;
+  const lineHeight = (window.innerWidth < 480 ? (120 / props.size + 1) : 50) + "px";
+
+  const style = {
+    left: left,
+    top: top,
+    width: width,
+    height: height,
+    fontSize: fsize,
+    lineHeight: lineHeight,
   }
   return (
-    <button onClick={props.onClick} className="square" style={position}>{props.value}</button>    
+    <button onClick={props.onClick} className="square" style={style}>{props.value}</button>    
   );
 }
 function Squares(props) {
@@ -19,6 +30,7 @@ function Squares(props) {
           x={x}
           y={y}
           onClick={() => props.handleClick(x, y)}
+          size={props.size}
         />
       })
     }

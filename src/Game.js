@@ -7,14 +7,6 @@ import Complexity from './Components/Complexity'
 class Game extends Component {
   constructor(props) {
     super(props);
-    // this.rightPositions = [
-    //   [ 1,  2,  3,    4],
-    //   [ 5,  6,  7,    8],
-    //   [ 9, 10, 11,   12],
-    //   [13, 14, 15, null],
-    //   // [ 9, 10, 15,   11],
-    //   // [13, 14, null, 12],
-    // ];
     this.state = {
       started: false,
       timeStarted: {},
@@ -75,11 +67,14 @@ class Game extends Component {
   }
   handleChanges = (e) => {
     this.wonGame();
+    const width = window.innerWidth < 480 ? (240 / e.target.value + 1) : 80;
+    const height = window.innerWidth < 480 ? (240 / e.target.value + 1) : 80;
     this.setState({
       size: e.target.value,
+      positions: rightPositions(e.target.value),
       sizeStyle: {
-        width: e.target.value*80+3,
-        height: e.target.value*80+3,
+        width: e.target.value*width+3,
+        height: e.target.value*height+3,
       },
     });
   }
@@ -90,14 +85,15 @@ class Game extends Component {
     squares.forEach((elem,i) => {
       squares[i] = elem.slice();
     });
-    //start game
-    if(!this.state.started) this.startGame(rightPositions(this.state.size));
     //end game
     if(this.state.started && calculateWinner(squares, this.state.size)) return;
-    if(!squares[0][this.state.size-1]) {
-      console.error('squres don`t change');
-      return;
-    }
+    //start game
+    if(!this.state.started) this.startGame(rightPositions(this.state.size));
+   
+    // if(!squares[0][this.state.size-1]) {
+    //   console.error('squres don`t change');
+    //   return;
+    // }
     // where null
     const xNull = squares[y].indexOf(null);
     const yNull = (() => {
@@ -143,7 +139,11 @@ class Game extends Component {
         <Complexity handleChanges={this.handleChanges}/>
         <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]}/>
         <div className="board" style={this.state.sizeStyle}>
-          <Squares positions={!this.state.started ? rightPositions(this.state.size) : this.state.positions} handleClick={this.handleClick}/>
+          <Squares 
+            positions={!this.state.started ? rightPositions(this.state.size) : this.state.positions} 
+            handleClick={this.handleClick}
+            size={this.state.size}
+          />
           {/* {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>} */}
         </div>
       </div>
