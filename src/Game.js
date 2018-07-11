@@ -23,13 +23,7 @@ class Game extends Component {
       },
     };
   }
-  // componentWillMount() {
-  //   this.setState({
-  //     started: false,
-  //     positions: rightPositions(this.state.size),
-      
-  //   });
-  // }
+
   startGame(squares) { 
     let squaresValues = [];
     let tempSquares = squares.slice();
@@ -64,7 +58,21 @@ class Game extends Component {
       positions: rightPositions(this.state.size),
       started: false,
     });
+  } 
+
+  componentWillMount() {
+    const width = this.state.size*(window.innerWidth < 480 ? (240 / this.state.size + 1) : 80) + 3;
+    const height = this.state.size*(window.innerWidth < 480 ? (240 / this.state.size + 1) : 80) + 3;
+    this.setState({
+      started: false,
+      positions: rightPositions(this.state.size),
+      sizeStyle: {
+        width: width,
+        height: height,
+      },
+    });
   }
+
   handleChanges = (e) => {
     this.wonGame();
     const width = window.innerWidth < 480 ? (240 / e.target.value + 1) : 80;
@@ -80,7 +88,8 @@ class Game extends Component {
   }
   
   handleClick = (x, y) =>  {
-    // console.log(`--- clicked btn ${elem} pos (${x}, ${y})`);
+    // console.log(`--- clicked btn pos (${x}, ${y})`);
+    // debugger;
     let squares = this.state.positions.slice();
     squares.forEach((elem,i) => {
       squares[i] = elem.slice();
@@ -88,7 +97,7 @@ class Game extends Component {
     //end game
     if(this.state.started && calculateWinner(squares, this.state.size)) return;
     //start game
-    if(!this.state.started) this.startGame(rightPositions(this.state.size));
+    if(!this.state.started) {this.startGame(rightPositions(this.state.size)); return;}
    
     // if(!squares[0][this.state.size-1]) {
     //   console.error('squres don`t change');
@@ -178,12 +187,6 @@ function rightPositions(size) {
       positions[i].push(i*size + j + 1);
   }
   positions[size-1][size-1] = null;
-  // positions.forEach((row, i) => {
-  //   row.forEach((elem, j) => {
-  //     elem = i*size + j;
-  //     console.log(elem);
-  //   })
-  // })
   return positions;
 }
 export default Game; 
