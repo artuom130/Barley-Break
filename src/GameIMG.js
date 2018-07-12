@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import Squares from './Components/Squares'
+import SquaresIMG from './Components/SquaresIMG';
 import GameInfo from './Components/GameInfo';
-import Complexity from './Components/Complexity'
+import Complexity from './Components/Complexity';
+import SimpleSlider from './Components/Slider';
 
-
-class Game extends Component {
+class GameIMG extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,7 +18,6 @@ class Game extends Component {
         seconds: 0,
         minutes: 0,
       },
-      showOriginal: false, 
     };
   }
 
@@ -67,17 +66,6 @@ class Game extends Component {
       boardWidth: width,
     });
   }
-
-  handleChanges = (e) => {
-    this.wonGame();
-    const size = +   e.target.value;
-    const width = (window.innerWidth < 480 ? 240 : 320) + 4 + size-1;
-    this.setState({
-      size: size,
-      positions: rightPositions(size),
-      boardWidth: width,
-    });
-  }
   handleClickInfo = (e) => {
     const isDown = e.type === 'mousedown' || e.type === 'touchstart';
     if(isDown) {
@@ -91,6 +79,17 @@ class Game extends Component {
       showOriginal: isDown,
     });
   }
+  handleChanges = (e) => {
+    this.wonGame();
+    const size = +   e.target.value;
+    const width = (window.innerWidth < 480 ? 240 : 320) + 4 + size-1;
+    this.setState({
+      size: size,
+      positions: rightPositions(size),
+      boardWidth: width,
+    });
+  }
+  
   handleClick = (x, y) =>  {
     // console.log(`--- clicked btn pos (${x}, ${y})`);
     // debugger;
@@ -146,13 +145,12 @@ class Game extends Component {
         <Complexity handleChanges={this.handleChanges}/>
         <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]} handleClickInfo={this.handleClickInfo}/>
         <div className="board" style={{width: this.state.boardWidth, height: this.state.boardWidth}}>
-          <Squares 
+          <SquaresIMG 
             positions={this.state.showOriginal? rightPositions(this.state.size) : this.state.positions} 
             handleClick={this.handleClick}
             size={this.state.size}
             boardWidth={this.state.boardWidth}
           />
-          {/* {this.state.started ? null : <button className="start" onClick={() => {this.startGame(this.rightPositions)}}>Start</button>} */}
         </div>
       </div>
     );
@@ -197,4 +195,4 @@ function rightPositions(size) {
   positions[size-1][size-1] = null;
   return positions;
 }
-export default Game; 
+export default GameIMG; 

@@ -8,6 +8,12 @@ function GameInfo(props) {
       <div className="info">
         <h3>Ходы: {props.moves}</h3>
         <h3>Время: {time}</h3>
+        <button className="showOriginal" 
+          onMouseDown={props.handleClickInfo} 
+          onMouseUp={props.handleClickInfo}
+          onTouchStart={props.handleClickInfo}
+          onTouchEnd={props.handleClickInfo}
+        >?</button>
       </div>
   );
 }
