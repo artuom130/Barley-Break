@@ -1,15 +1,28 @@
 import React from 'react';
-import imgMob from '../img/chrome_mob.jpg';
 
 function Square(props) {
+  
   let boardWidth = props.boardWidth - 4 - props.size+1;
   const left = props.x*(boardWidth / props.size + 1) + 2;
   const top = props.y*(boardWidth / props.size + 1) + 2;
   const width = (boardWidth / props.size);
   const fsize = ((boardWidth / 2) / props.size + 10);
   const lineHeight = (boardWidth / props.size) + "px";
-  let img = null;
-  if (true) img = require('../img/chrome.jpg');
+  let imgURL = null;
+
+  switch(props.imgName) {
+    case 'chrome' : imgURL = require('../img/chrome.jpg'); break;
+    case 'chrome_mob' : imgURL = require('../img/chrome_mob.jpg'); break;
+    case 'vag' : imgURL = require('../img/vag.jpg'); break;
+    case 'vag_mob' : imgURL = require('../img/vag_mob.jpg'); break;
+    case 'flower' : imgURL = require('../img/flower.jpg'); break;
+    case 'flower_mob' : imgURL = require('../img/flower_mob.jpg'); break;
+    case 'panda' : imgURL = require('../img/panda.jpg'); break;
+    case 'panda_mob' : imgURL = require('../img/panda_mob.jpg'); break;
+    case 'orange' : imgURL = require('../img/orange.jpg'); break;
+    case 'orange_mob' : imgURL = require('../img/orange_mob.jpg'); break;
+    default : imgURL = require('../img/flower.jpg');
+  }
   const style = {
     left: left,
     top: top,
@@ -17,7 +30,7 @@ function Square(props) {
     height: width,
     fontSize: fsize,
     lineHeight: lineHeight,
-    backgroundImage: `url(${window.innerWidth < 480 ? imgMob : img})`,
+    backgroundImage: `url(${imgURL})`,
     backgroundPosition: `${width * -1 * (((props.value - 1) % props.size))}px ${width*-1*Math.floor((props.value - 1) / props.size)}px`,
   }
   return (
@@ -26,6 +39,7 @@ function Square(props) {
 }
 function SquaresIMG(props) {
   const rows = props.positions.slice();
+  const imgName = `${window.innerWidth < 480 ? props.imgName + '_mob' : props.imgName}`;
   const squares = rows.map(
     (elem, y) => {
       return elem.map((elem, x) => {
@@ -37,6 +51,7 @@ function SquaresIMG(props) {
           onClick={() => props.handleClick(x, y)}
           size={props.size}
           boardWidth={props.boardWidth}
+          imgName={imgName}
         />
       })
     }

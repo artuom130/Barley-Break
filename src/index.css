@@ -144,7 +144,43 @@ h1 {
 .navLink:last-child {
   border-radius: 0 5px 5px 0;
 }
+.slider {
+  margin-top: 20px;
+  max-width: 320px;
+  overflow: visible;
+}
+.slide:focus {
+  outline: none;
+}
+.slide {
+  width: 100px;
+}
+.slideIMG {
+  cursor: pointer;
+  margin: 2px auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #999 #000 #000 #999;
+  transition: all ease .25s;
+}
+.slideIMG:hover,
+.slideIMG:focus {
+  border-radius: 12px;
+}
+
+
+
+ /* =================     Media Query      ======================= */
+
+
+
 @media screen and (max-width:550px) {
+  .slider {
+    overflow: hidden;
+  }
   .nav, h1 {
     margin: 0 10px;
   }

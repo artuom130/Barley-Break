@@ -2,14 +2,14 @@ import React, {Component} from 'react';
 import SquaresIMG from './Components/SquaresIMG';
 import GameInfo from './Components/GameInfo';
 import Complexity from './Components/Complexity';
-import SimpleSlider from './Components/Slider';
-
+import ImageSlider from './Components/Slider';
 class GameIMG extends Component {
   constructor(props) {
     super(props);
     this.state = {
       started: false,
       timeStarted: {},
+      curImg: 'flower',
       size: 4,
       boardWidth: 320, 
       positions: rightPositions(4),
@@ -18,7 +18,9 @@ class GameIMG extends Component {
         seconds: 0,
         minutes: 0,
       },
+
     };
+    this.images = ['chrome', 'vag', 'flower', 'panda', 'orange'];
   }
 
   startGame(squares) { 
@@ -49,7 +51,7 @@ class GameIMG extends Component {
     }); 
   }
 
-  wonGame() {
+  stopGame() {
     clearInterval(this.timerID);
     this.setState({
       positions: rightPositions(this.state.size),
@@ -79,8 +81,8 @@ class GameIMG extends Component {
       showOriginal: isDown,
     });
   }
-  handleChanges = (e) => {
-    this.wonGame();
+  handleChangeComplexity = (e) => {
+    this.stopGame();
     const size = +   e.target.value;
     const width = (window.innerWidth < 480 ? 240 : 320) + 4 + size-1;
     this.setState({
@@ -89,7 +91,13 @@ class GameIMG extends Component {
       boardWidth: width,
     });
   }
-  
+  handleChangeImage = (e) => {
+    this.stopGame();
+    const name = e.target.alt;
+    if(name) this.setState({
+      curImg: name,
+    });
+  }
   handleClick = (x, y) =>  {
     // console.log(`--- clicked btn pos (${x}, ${y})`);
     // debugger;
@@ -119,7 +127,7 @@ class GameIMG extends Component {
     }    
     if(~xNull || ~yNull) {
       if(calculateWinner(squares, this.state.size)) {
-        this.wonGame();
+        this.stopGame();
       }
       else {
         this.setState({
@@ -142,7 +150,7 @@ class GameIMG extends Component {
   render() {
     return (
       <div className="layout-positioner">
-        <Complexity handleChanges={this.handleChanges}/>
+        <Complexity handleChanges={this.handleChangeComplexity}/>
         <GameInfo moves={this.state.moves} time={[this.state.seconds, this.state.minutes]} handleClickInfo={this.handleClickInfo}/>
         <div className="board" style={{width: this.state.boardWidth, height: this.state.boardWidth}}>
           <SquaresIMG 
@@ -150,8 +158,10 @@ class GameIMG extends Component {
             handleClick={this.handleClick}
             size={this.state.size}
             boardWidth={this.state.boardWidth}
+            imgName={this.state.curImg}
           />
         </div>
+        <ImageSlider images={this.images} handleChangeImage={this.handleChangeImage}/>
       </div>
     );
   }
