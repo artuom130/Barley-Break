@@ -9,7 +9,7 @@ class GameIMG extends Component {
     this.state = {
       started: false,
       timeStarted: {},
-      curImg: 'flower',
+      curImg: '',
       size: 4,
       boardWidth: 320, 
       positions: rightPositions(4),
@@ -18,9 +18,21 @@ class GameIMG extends Component {
         seconds: 0,
         minutes: 0,
       },
-
     };
-    this.images = ['chrome', 'vag', 'flower', 'panda', 'orange'];
+    this.imagesURL = [
+      require(`./img/chrome.jpg`),
+      require(`./img/flower.jpg`),
+      require(`./img/vag.jpg`),
+      require(`./img/panda.jpg`),
+      require(`./img/orange.jpg`),
+    ];
+    this.imagesURLmob = [
+      require(`./img/chrome_mob.jpg`),
+      require(`./img/flower_mob.jpg`),
+      require(`./img/vag_mob.jpg`),
+      require(`./img/panda_mob.jpg`),
+      require(`./img/orange_mob.jpg`),
+    ]
   }
 
   startGame(squares) { 
@@ -62,10 +74,12 @@ class GameIMG extends Component {
   componentWillMount() {
     const size = this.state.size;
     const width = (window.innerWidth < 480 ? 240 : 320) + 4 + size-1;
+    const curImg = window.innerWidth < 480 ? this.imagesURLmob[1] : this.imagesURL[1];
     this.setState({
       started: false,
       positions: rightPositions(this.state.size),
       boardWidth: width,
+      curImg: curImg, 
     });
   }
   handleClickInfo = (e) => {
@@ -93,14 +107,13 @@ class GameIMG extends Component {
   }
   handleChangeImage = (e) => {
     this.stopGame();
-    const name = e.target.alt;
+    const name = e.target.src;
     if(name) this.setState({
       curImg: name,
     });
   }
   handleClick = (x, y) =>  {
-    // console.log(`--- clicked btn pos (${x}, ${y})`);
-    // debugger;
+
     let squares = this.state.positions.slice();
     squares.forEach((elem,i) => {
       squares[i] = elem.slice();
@@ -158,10 +171,10 @@ class GameIMG extends Component {
             handleClick={this.handleClick}
             size={this.state.size}
             boardWidth={this.state.boardWidth}
-            imgName={this.state.curImg}
+            imgURL={this.state.curImg}
           />
         </div>
-        <ImageSlider images={this.images} handleChangeImage={this.handleChangeImage}/>
+        <ImageSlider images={window.innerWidth < 480 ? this.imagesURLmob : this.imagesURL} handleChangeImage={this.handleChangeImage}/>
       </div>
     );
   }

@@ -166,10 +166,7 @@ h1 {
   border-color: #999 #000 #000 #999;
   transition: all ease .25s;
 }
-.slideIMG:hover,
-.slideIMG:focus {
-  border-radius: 12px;
-}
+
 
 
 
@@ -181,6 +178,7 @@ h1 {
   .slider {
     overflow: hidden;
   }
+
   .nav, h1 {
     margin: 0 10px;
   }

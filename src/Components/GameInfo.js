@@ -6,8 +6,8 @@ function GameInfo(props) {
   const time = seconds ? (minutes + ':' + seconds) : '00:00';
  return (
       <div className="info">
-        <h3>Ходы: {props.moves}</h3>
-        <h3>Время: {time}</h3>
+        <h3>Moves: {props.moves}</h3>
+        <h3>Time: {time}</h3>
         <button className="showOriginal" 
           onMouseDown={props.handleClickInfo} 
           onMouseUp={props.handleClickInfo}

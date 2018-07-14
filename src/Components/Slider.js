@@ -16,7 +16,7 @@ export default class ImageSlider extends Component {
     };
     const slides = this.props.images.map((elem) => {
       return (<div className="slide" key={elem}>
-        <img className="slideIMG" src={require(`../img/${elem}.jpg`)} alt={elem}/>
+        <img className="slideIMG" src={elem} alt={elem}/>
       </div>);
     });
     return (
